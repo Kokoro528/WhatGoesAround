@@ -41,7 +41,6 @@ func main() {
 	client, err := elastic.NewClient(elastic.SetURL(ES_URL), elastic.SetSniff(false))
 	if err != nil {
 		panic(err)
-		return
 	}
 
 	// Use the IndexExists service to check if a specified index exists.
@@ -82,7 +81,6 @@ func handlerPost(w http.ResponseWriter, r *http.Request) {
 	var p Post
 	if err := decoder.Decode(&p); err != nil {
 		panic(err)
-		return
 	}
 	id := uuid.New()
 	// Save to ES.
@@ -96,7 +94,6 @@ func saveToES(p *Post, id string) {
 	es_client, err := elastic.NewClient(elastic.SetURL(ES_URL), elastic.SetSniff(false))
 	if err != nil {
 		panic(err)
-		return
 	}
 
 	// Save it to index
@@ -109,7 +106,6 @@ func saveToES(p *Post, id string) {
 		Do()
 	if err != nil {
 		panic(err)
-		return
 	}
 
 	fmt.Printf("Post is saved to Index: %s\n", p.Message)
@@ -132,7 +128,6 @@ func handlerSearch(w http.ResponseWriter, r *http.Request) {
 	client, err := elastic.NewClient(elastic.SetURL(ES_URL), elastic.SetSniff(false))
 	if err != nil {
 		panic(err)
-		return
 	}
 
 	// Define geo distance query as specified in
@@ -174,7 +169,6 @@ func handlerSearch(w http.ResponseWriter, r *http.Request) {
 	js, err := json.Marshal(ps)
 	if err != nil {
 		panic(err)
-		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -187,8 +181,8 @@ func containsFilteredWords(s *string) bool {
 		"150",
 	}
 
-	for _, word := range filtedWords {
-		if strings.constains(*s, word) {
+	for _, word := range filteredWords {
+		if strings.Contains(*s, word) {
 			return true
 		}
 	}
