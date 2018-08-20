@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"reflect"
 	"strconv"
-	"string"
+	"strings
 )
 
 type Location struct {
