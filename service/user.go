@@ -32,24 +32,28 @@ func checkUser(username, password string) bool {
 		return false
 	}
 
-	//Search with a term query
+	// Search with a term query
 	termQuery := elastic.NewTermQuery("username", username)
-	queryResult, err = es_client.Search().Index(INDEX).Query(termQuery).Pretty(true).Do()
-
+	queryResult, err := es_client.Search().
+		Index(INDEX).
+		Query(termQuery).
+		Pretty(true).
+		Do()
 	if err != nil {
 		fmt.Printf("ES query failed %v\n", err)
 		return false
 	}
+
 	var tyu User
 	for _, item := range queryResult.Each(reflect.TypeOf(tyu)) {
 		u := item.(User)
 		return u.Password == password && u.Username == username
 	}
-	// if no user exists, false
+	// If no user exist, return false.
 	return false
 }
 
-// Add a new user. Return true if successfully
+// Add a new user. Return true if successfully.
 func addUser(user User) bool {
 	// In theory, BigTable is a better option for storing user credentials than ES. However,
 	// since BT is more expensive than ES so usually students will disable BT.
@@ -59,40 +63,49 @@ func addUser(user User) bool {
 		return false
 	}
 
-	//Search with a term query
+	// Search with a term query
 	termQuery := elastic.NewTermQuery("username", user.Username)
-	queryResult, err = es_client.Search().Index(INDEX).Query(termQuery).Pretty(true).Do()
+	queryResult, err := es_client.Search().
+		Index(INDEX).
+		Query(termQuery).
+		Pretty(true).
+		Do()
 	if err != nil {
 		fmt.Printf("ES query failed %v\n", err)
 		return false
 	}
 
 	if queryResult.TotalHits() > 0 {
-		fmt.Printf("USer %s has existed , cannot creat duplicate user.\n", user.Username)
+		fmt.Printf("User %s has existed, cannot create duplicate user.\n", user.Username)
 		return false
 	}
 
-	// save it to index
-	_, err = es_client.Index().Index(INDEX).Type(TYPE_USER).Id(user.Username).BodyJson(user).Refresh(true).Do()
-
+	// Save it to index
+	_, err = es_client.Index().
+		Index(INDEX).
+		Type(TYPE_USER).
+		Id(user.Username).
+		BodyJson(user).
+		Refresh(true).
+		Do()
 	if err != nil {
 		fmt.Printf("ES save failed %v\n", err)
 		return false
 	}
-
 	return true
+
 }
 
-//If signup is successful, a new session is created
-
+// If signup is successful, a new session is created.
 func signupHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Received one signup requrest")
+	fmt.Println("Received one signup request")
+
 	decoder := json.NewDecoder(r.Body)
 	var u User
 	if err := decoder.Decode(&u); err != nil {
 		panic(err)
+		return
 	}
-
 	u.Username = strings.ToLower(u.Username)
 
 	if u.Username != "" && u.Password != "" {
@@ -100,13 +113,14 @@ func signupHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("User added successfully.")
 			w.Write([]byte("User added successfully."))
 		} else {
-			fmt.Println("Failed to add a new user")
+			fmt.Println("Failed to add a new user.")
 			http.Error(w, "Failed to add a new user", http.StatusInternalServerError)
 		}
 	} else {
 		fmt.Println("Empty password or username.")
-		http.Error(w, "Failed to add a new user", http.StatusInternalSearverError)
+		http.Error(w, "Empty password or username", http.StatusInternalServerError)
 	}
+
 	w.Header().Set("Content-Type", "text/plain")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 }
