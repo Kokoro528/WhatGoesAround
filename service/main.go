@@ -30,7 +30,7 @@ const (
 	ES_URL = "http://35.196.28.243:9200"
 
 	// Needs to update this bucket based on your gcs bucket name.
-	BUCKET_NAME = "post-images-102030"
+	BUCKET_NAME = "post-images-204004"
 )
 
 type Location struct {
