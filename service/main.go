@@ -31,6 +31,7 @@ const (
 
 	// Needs to update this bucket based on your gcs bucket name.
 	BUCKET_NAME = "post-images-204004"
+	API_PREFIX      = "/api/v1"
 )
 
 type Location struct {
@@ -96,6 +97,12 @@ func main() {
 	r.Handle("/signup", http.HandlerFunc(signupHandler)).Methods("POST")
 
 	http.Handle("/", r)
+	// Backend endpoints.
+	// http.Handle(API_PREFIX+"/", r)
+	// Frontend endpoints.
+	http.Handle("/", http.FileServer(http.Dir("build")))
+	log.Fatal(http.ListenAndServe(":8080", nil))
+
 	log.Fatal(http.ListenAndServe(":8080", nil))
 
 }
