@@ -101,10 +101,7 @@ func main() {
 	http.Handle(API_PREFIX+"/", r)
 	// Frontend endpoints.
 	http.Handle("/", http.FileServer(http.Dir("build")))
-	log.Fatal(http.ListenAndServe(":8080", nil))
-
-	log.Fatal(http.ListenAndServe(":8080", nil))
-
+	log.Fatal(http.ListenAndServe(":8080", handlers.CORS()(r)))
 }
 
 func handlerSearch(w http.ResponseWriter, r *http.Request) {
