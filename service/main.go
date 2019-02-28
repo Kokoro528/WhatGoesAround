@@ -17,6 +17,7 @@ import (
 	"net/http"
 	"reflect"
 	"strconv"
+	"os"
 )
 
 const (
@@ -91,6 +92,13 @@ func main() {
 		},
 		SigningMethod: jwt.SigningMethodHS256,
 	})
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
+	originsOk := handlers.AllowedOrigins([]string{os.Getenv("ORIGIN_ALLOWED")})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+
+// start server listen
+// with error handling
+	
 
 	r.Handle("/post", jwtMiddleware.Handler(http.HandlerFunc(handlerPost))).Methods("POST")
 	r.Handle("/search", jwtMiddleware.Handler(http.HandlerFunc(handlerSearch))).Methods("GET")
@@ -102,7 +110,9 @@ func main() {
 	http.Handle(API_PREFIX+"/", r)
 	// Frontend endpoints.
 	http.Handle("/", http.FileServer(http.Dir("build")))
+
 	log.Fatal(http.ListenAndServe(":8080", handlers.CORS()(r)))
+	log.Fatal(http.ListenAndServe(":8080", handlers.CORS(originsOk, headersOk, methodsOk)(r)))
 }
 
 func handlerSearch(w http.ResponseWriter, r *http.Request) {
