@@ -96,9 +96,9 @@ func main() {
 	r.Handle("/login", http.HandlerFunc(loginHandler)).Methods("POST")
 	r.Handle("/signup", http.HandlerFunc(signupHandler)).Methods("POST")
 
-	http.Handle("/", r)
+	// http.Handle("/", r)
 	// Backend endpoints.
-	// http.Handle(API_PREFIX+"/", r)
+	http.Handle(API_PREFIX+"/", r)
 	// Frontend endpoints.
 	http.Handle("/", http.FileServer(http.Dir("build")))
 	log.Fatal(http.ListenAndServe(":8080", nil))
