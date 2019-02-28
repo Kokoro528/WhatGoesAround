@@ -10,6 +10,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"github.com/pborman/uuid"
+	"github.com/gorilla/handlers"
 	elastic "gopkg.in/olivere/elastic.v3"
 	"io"
 	"log"
